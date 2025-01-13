@@ -1,0 +1,35 @@
+﻿@page "/"
+@using System.Net.Http.Headers
+@using System.Text
+
+@using Microsoft.Kiota.Abstractions
+@inject IHttpClientFactory HttpClientFactory
+<PageTitle>@L["Home"]</PageTitle>
+
+<MudPaper Class="pa-4 mb-3">
+   
+   <MicroBlogger.ClientApp.Pages.Posts.PostControl></MicroBlogger.ClientApp.Pages.Posts.PostControl>
+
+
+</MudPaper>
+<MudPaper Class="pa-4 mb-3">
+    <MicroBlogger.ClientApp.Pages.Posts.ListPosts></MicroBlogger.ClientApp.Pages.Posts.ListPosts>
+    </MudPaper>
+
+
+<style>
+    @@import url("https://cdn.jsdelivr.net/npm/@@fancyapps/ui@@5.0.36/dist/fancybox/fancybox.css");
+
+    .fancybox__container {
+        --fancybox-bg: rgba(24, 24, 27, 0.85);
+        z-index: 9999;
+    }
+
+</style>
+@code {
+  
+
+
+
+    
+}

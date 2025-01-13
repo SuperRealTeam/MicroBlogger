@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	  <AssemblyName>MicroBlogger.Migrators.PostgreSQL</AssemblyName>
+	  <RootNamespace>MicroBlogger.Migrators.PostgreSQL</RootNamespace>
+  </PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\MicroBlogger.Infrastructure\MicroBlogger.Infrastructure.csproj" />
+	</ItemGroup>
+</Project>

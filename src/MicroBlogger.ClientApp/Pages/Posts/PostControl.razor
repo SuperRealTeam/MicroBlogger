@@ -1,0 +1,143 @@
+﻿@using MicroBlogger.ClientApp.ExtraModels
+@using MicroBlogger.ClientApp.Services.Identity
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@using MicroBlogger.ClientApp.Services.Posts
+@using Microsoft.AspNetCore.Components.Authorization
+@using FluentValidation
+
+@inject PostServiceProxy PostServiceProxy
+@inject ISignInManagement IdentityManagement
+@inject LayoutService LayoutService
+<MudForm @ref="form" Model="@model" @bind-IsValid="@success" Disabled="isBusy" @bind-Errors="@errors" validation="@(ValidationRules.ValidateValue)" ValidationDelay="0">
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderAvatar>
+                <MudAvatar Color="Color.Secondary">@userModel?.Username?.FirstOrDefault()</MudAvatar>
+            </CardHeaderAvatar>
+            <CardHeaderContent>
+                <MudTextField @bind-Value="model.Message" For="@(()=>model.Message)" MaxLength="140" Validation="@(new LengthAttribute(0,140) {ErrorMessage = "Excedd max length"})" Label="What's Happening?!" ShrinkLabel="false" MaxLines="5" AutoGrow Variant="Variant.Filled" />
+            </CardHeaderContent>
+            <CardHeaderActions >
+
+                <MudFileUpload @ref="_fileUpload" T="IBrowserFile" For="@(() => model.File)"
+                               @bind-Files="model.File" OnFilesChanged="UploadFiles">
+                    <ActivatorContent>
+                        <MudIconButton Color="Color.Primary"
+                        Icon="@Icons.Material.Filled.PhotoCamera">
+                        </MudIconButton>
+                    </ActivatorContent>
+                </MudFileUpload>
+
+            </CardHeaderActions>
+        </MudCardHeader>
+        <MudCardContent>
+            @if (model.TempImageUrl != null || !string.IsNullOrEmpty(model.TempImageUrl))
+            {
+                <MudImage ObjectFit="ObjectFit.None" ObjectPosition="@ObjectPosition.Center" Height="500" Width="500" Src="@model.TempImageUrl"   Elevation="25" Class="rounded-lg" />
+            }
+
+        </MudCardContent>
+        <MudCardActions Style="float: right !important" >
+
+            <MudButton Variant="Variant.Filled" Class="align-self-start" Disabled="@(!success)" Color="Color.Primary" Style="float: right !important" OnClick="@(async () => await Submit())">Post</MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudForm>
+
+@code {
+    private PostDto model = new PostDto();
+    private FileModelFluentValidator ValidationRules = new();
+    private ProfileResponse? userModel => UserProfileStore.Profile;
+    private string mudImage;
+    string _string;
+    bool success;
+    bool isBusy;
+    string[] errors = { };
+    MudForm form;
+    private MudFileUpload<IBrowserFile> _fileUpload;
+    IList<IBrowserFile> _files = new List<IBrowserFile>();
+    private async void UploadFiles(InputFileChangeEventArgs e)
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            var resizedFile = await e.File.RequestImageFileAsync("image/webp", 500, 500);
+            var antiforgeryToken = await ApiClient.FileManagement.AntiforgeryToken.GetAsync();
+            var request = new MultipartBody();
+            request.AddOrReplacePart($"__{antiforgeryToken.HeaderName}", "text/plain", $"{antiforgeryToken.RequestToken}");
+            var filename = Guid.NewGuid().ToString() + Path.GetExtension(e.File.Name);
+            var stream = new MemoryStream();
+            await resizedFile.OpenReadStream(int.MaxValue).CopyToAsync(stream);
+            request.AddOrReplacePart($"files[0]", "application/octet-stream", stream, filename);
+
+            var response = await ApiClient.FileManagement.Upload.PostAsync(request);
+            if (response is not null && response.Any())
+            {
+                model.TempImageUrl = response;
+                StateHasChanged();
+            }
+        }
+        //TODO upload the files to the server
+    }
+    private Task ClearAsync()
+        => _fileUpload?.ClearAsync() ?? Task.CompletedTask;
+    private async Task Submit()
+    {
+
+
+        if (form.IsValid)
+        {
+            if (success)
+            {
+
+
+                var result = await PostServiceProxy.CreatePostAsync((CreatePostCommand)model);
+                result.Switch(
+                   async ok =>
+                    {
+                        Snackbar.Add(L["Post created successfully!"], MudBlazor.Severity.Success);
+                        await form.ResetAsync();
+                        StateHasChanged();
+
+                    },
+                    invalid =>
+                    {
+                        Snackbar.Add(invalid.Message ?? L["Failed validation"], MudBlazor.Severity.Error);
+
+                    },
+                    error =>
+                    {
+                        Snackbar.Add(error.Message ?? L["Failed to create product."], MudBlazor.Severity.Error);
+
+                    }
+                );
+            }
+
+           
+        }
+    }
+
+    public class FileModelFluentValidator : AbstractValidator<PostDto>
+    {
+        public FileModelFluentValidator()
+        {
+           
+            RuleFor(x => x.File)
+            .NotEmpty();
+            When(x => x.File != null, () =>
+            {
+                RuleFor(x => x.File.Size).LessThanOrEqualTo(20485760).WithMessage("The maximum file size is 20 MB");
+            });
+        }
+
+        public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
+        {
+            var result = await ValidateAsync(ValidationContext<PostDto>.CreateWithOptions((PostDto)model, x => x.IncludeProperties(propertyName)));
+            if (result.IsValid)
+                return Array.Empty<string>();
+            return result.Errors.Select(e => e.ErrorMessage);
+        };
+    }
+}
+

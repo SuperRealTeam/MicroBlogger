@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	  <AssemblyName>MicroBlogger.Migrators.SQLite</AssemblyName>
+	  <RootNamespace>MicroBlogger.Migrators.SQLite</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\MicroBlogger.Infrastructure\MicroBlogger.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

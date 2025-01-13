@@ -1,0 +1,45 @@
+﻿@using MicroBlogger.ClientApp.Services.Posts
+@inject PostServiceProxy PostServiceProxy
+@if(dto.Items?.Count()>0)
+{
+    foreach(var post in dto.Items)
+    {
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderAvatar>
+                    <MudAvatar Color="Color.Secondary">@post.CreatedBy</MudAvatar>
+                </CardHeaderAvatar>
+                <CardHeaderContent>
+                    <MudText @bind-Value="post.Message" For="@(()=>post.Message)" MaxLength="140"/>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                @if (post.TempImageUrl != null || !string.IsNullOrEmpty(post.TempImageUrl))
+                {
+                    <MudImage ObjectFit="ObjectFit.None" ObjectPosition="@ObjectPosition.Center" Height="500" Width="500" Src="@(post.ImageUrl?? post.TempImageUrl)" Elevation="25" Class="rounded-lg" />
+                }
+
+            </MudCardContent>
+
+        </MudCard>
+    }
+}
+@code {
+    private PaginatedResultOfPostsDto dto = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+              
+        var query = new PostsWithPaginationQuery();
+        query.PageNumber = 0;
+        query.PageSize = 200;
+        query.Keywords = "";
+        query.OrderBy =  "Created";
+        query.SortDirection = SortDirection.Descending.ToString();
+
+        var result =  await PostServiceProxy.GetPaginatedProductsAsync(query);
+        dto = result;
+        StateHasChanged();
+
+    }
+}
