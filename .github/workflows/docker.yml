@@ -32,12 +32,12 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       
-      - name: Build and push CleanAspire.WebApp image
+      - name: Build and push MicroBlogger.WebApp image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/cleanaspire-webapp:${{ steps.version.outputs.version }} -f src/CleanAspire.WebApp/Dockerfile .
-          docker push ${{ secrets.DOCKER_USERNAME }}/cleanaspire-webapp:${{ steps.version.outputs.version }}
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/MicroBlogger-webapp:${{ steps.version.outputs.version }} -f src/MicroBlogger.WebApp/Dockerfile .
+          docker push ${{ secrets.DOCKER_USERNAME }}/MicroBlogger-webapp:${{ steps.version.outputs.version }}
 
-      - name: Build and push CleanAspire.Api image
+      - name: Build and push MicroBlogger.Api image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/cleanaspire-api:${{ steps.version.outputs.version }} -f src/CleanAspire.Api/Dockerfile .
-          docker push ${{ secrets.DOCKER_USERNAME }}/cleanaspire-api:${{ steps.version.outputs.version }}
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/MicroBlogger-api:${{ steps.version.outputs.version }} -f src/MicroBlogger.Api/Dockerfile .
+          docker push ${{ secrets.DOCKER_USERNAME }}/MicroBlogger-api:${{ steps.version.outputs.version }}

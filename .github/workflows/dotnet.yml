@@ -27,8 +27,8 @@ jobs:
       run: dotnet dev-certs https --trust
 
     - name: Restore dependencies
-      run: dotnet restore CleanAspire.sln
+      run: dotnet restore MicroBlogger.sln
     - name: Build
-      run: dotnet build CleanAspire.sln --no-restore
+      run: dotnet build MicroBlogger.sln --no-restore
     - name: Run tests
-      run: dotnet test ./tests/CleanAspire.Tests/CleanAspire.Tests.csproj --no-build --verbosity normal
+      run: dotnet test ./tests/MicroBlogger.Tests/MicroBlogger.Tests.csproj --no-build --verbosity normal
