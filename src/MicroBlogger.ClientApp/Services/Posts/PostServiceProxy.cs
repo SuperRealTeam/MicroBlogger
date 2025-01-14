@@ -76,7 +76,6 @@ public class PostServiceProxy
             return new PaginatedResultOfPostsDto();
         }
     }
-
     public async Task<OneOf<PostsDto, ApiClientValidationError, ApiClientError>> CreatePostAsync(CreatePostCommand command)
     {
         var isOnline = await _onlineStatusInterop.GetOnlineStatusAsync();

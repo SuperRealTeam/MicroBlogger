@@ -8,6 +8,9 @@ using MicroBlogger.Application.Common.Models;
 using MicroBlogger.Application.Features.Posts.Commands;
 using MicroBlogger.Application.Features.Posts.DTOs;
 using MicroBlogger.Application.Features.Posts.Queries;
+using MicroBlogger.Domain.Identities;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MicroBlogger.Api.Endpoints;
@@ -30,6 +33,7 @@ public class PostsEndpointRegistar(ILogger<PostsEndpointRegistar> logger) : IEnd
         .WithSummary("Get all posts")
         .WithDescription("Returns a list of all posts in the system.");
 
+       
         // Create a new post
         group.MapPost("/", ([FromServices] IMediator mediator, [FromBody] CreatePostCommand command) => mediator.Send(command))
              .Produces<PostsDto>(StatusCodes.Status201Created)

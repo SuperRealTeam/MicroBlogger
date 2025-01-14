@@ -1563,6 +1563,73 @@
         ]
       }
     },
+    "/account/user/{id}": {
+      "get": {
+        "tags": [
+          "Authentication",
+          "Account Management"
+        ],
+        "summary": "Get product by ID",
+        "description": "Returns the details of a specific product by its unique ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Identity.Application": [ ]
+          }
+        ]
+      }
+    },
     "/account/updateEmail": {
       "post": {
         "tags": [
@@ -2925,7 +2992,7 @@
           }
         },
         "example": {
-          "email": "Theresa_Pouros70@hotmail.com",
+          "email": "Hoyt_Wolff33@gmail.com",
           "password": "P@ssw0rd!"
         }
       },
@@ -3012,7 +3079,7 @@
           }
         },
         "example": {
-          "Email": "Kennedi.Anderson83@gmail.com",
+          "Email": "Garrison12@hotmail.com",
           "Password": "P@ssw0rd!",
           "Nickname": "exampleNickname",
           "Provider": "Local",

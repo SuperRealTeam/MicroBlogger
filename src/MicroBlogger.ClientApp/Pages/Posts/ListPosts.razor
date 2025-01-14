@@ -4,24 +4,31 @@
 {
     foreach(var post in dto.Items)
     {
-        <MudCard>
+                <MudCard Outlined="true">
             <MudCardHeader>
                 <CardHeaderAvatar>
                     <MudAvatar Color="Color.Secondary">@post.CreatedBy</MudAvatar>
                 </CardHeaderAvatar>
-                <CardHeaderContent>
-                    <MudText @bind-Value="post.Message" For="@(()=>post.Message)" MaxLength="140"/>
+                       <CardHeaderContent>
+                            <MudText Typo="Typo.body1">@post.CreatedBy</MudText>
+                            
+                            <MudText Typo="Typo.body3">@post.Created</MudText>
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent>
-                @if (post.TempImageUrl != null || !string.IsNullOrEmpty(post.TempImageUrl))
+                        <MudText Typo="Typo.body1">@(post.Message)</MudText>
+                <br/>
+                         <br/>
+                @if (!string.IsNullOrEmpty(post.TempImageUrl) || !string.IsNullOrEmpty(post.TempImageUrl))
                 {
-                    <MudImage ObjectFit="ObjectFit.None" ObjectPosition="@ObjectPosition.Center" Height="500" Width="500" Src="@(post.ImageUrl?? post.TempImageUrl)" Elevation="25" Class="rounded-lg" />
+                    <MudImage ObjectFit="ObjectFit.None" ObjectPosition="@ObjectPosition.Center" Height="500" Width="500" Src="@(string.IsNullOrEmpty(post.ImageUrl)? post.TempImageUrl:post.ImageUrl)" Elevation="25" Class="rounded-lg" />
                 }
-
+                              
             </MudCardContent>
 
         </MudCard>
+        <br/>
+        <br/>
     }
 }
 @code {
@@ -39,6 +46,10 @@
 
         var result =  await PostServiceProxy.GetPaginatedProductsAsync(query);
         dto = result;
+        foreach(var post in dto.Items)
+        {
+            //await  ApiClient.Posts.[post.CreatedBy]
+        }
         StateHasChanged();
 
     }

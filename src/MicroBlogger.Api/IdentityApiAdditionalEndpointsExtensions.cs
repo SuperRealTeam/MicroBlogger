@@ -59,8 +59,7 @@ public static class IdentityApiAdditionalEndpointsExtensions
         .WithDescription("Fetches the profile information of the authenticated user. " +
          "Returns 404 if the user is not found. Requires authorization.");
 
-
-        routeGroup.MapPost("/profile", async Task<Results<Ok<ProfileResponse>, ValidationProblem, NotFound>>
+         routeGroup.MapPost("/profile", async Task<Results<Ok<ProfileResponse>, ValidationProblem, NotFound>>
             (ClaimsPrincipal claimsPrincipal, [FromBody] ProfileRequest request, HttpContext context) =>
         {
             var userManager = context.RequestServices.GetRequiredService<UserManager<TUser>>();
@@ -103,6 +102,15 @@ public static class IdentityApiAdditionalEndpointsExtensions
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .WithSummary("Update user profile information.")
         .WithDescription("Allows users to update their profile, including username, email, nickname, avatar, time zone, and language code.");
+
+        routeGroup.MapGet("/user/{id}", async (HttpContext context, [FromRoute] string id) => (await (context.RequestServices.GetRequiredService<UserManager<ApplicationUser>>()).FindByIdAsync(id)).UserName)
+        .RequireAuthorization()
+            .Produces<string>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status404NotFound)
+        .ProducesProblem(StatusCodes.Status400BadRequest)
+        .ProducesProblem(StatusCodes.Status500InternalServerError)
+        .WithSummary("Get product by ID")
+        .WithDescription("Returns the details of a specific product by its unique ID.");
 
         routeGroup.MapPost("/updateEmail", async Task<Results<Ok, ValidationProblem, NotFound>>
             (ClaimsPrincipal claimsPrincipal, [FromBody] UpdateEmailRequest request, HttpContext context) =>
